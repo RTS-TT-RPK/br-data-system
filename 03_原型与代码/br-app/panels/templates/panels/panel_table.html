@@ -1,0 +1,86 @@
+{% extends "panels/base.html" %}
+{% block title %}{{ panel.name }} · BR 数据预览{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / {{ panel.name }}</div>
+    <h1>{{ panel.name }}</h1>
+    <p class="muted">{{ panel.row_unit }} · 共 {{ total }} 行 · {{ panel.style_label }}</p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="{% url 'record_new' panel.key %}">新增一行</a>
+    <a class="btn ghost" href="{% url 'panel_export' panel.key %}?q={{ q }}&status={{ status }}">导出 CSV</a>
+    {% if panel.key == 'incoming_analysis' %}
+    <a class="btn" href="{% url 'incoming_analysis' %}">一键分析</a>
+    <a class="btn ghost" href="{% url 'summary_report_export' %}">下载综合报表</a>
+    <form method="post" action="{% url 'ingestion_simulate' %}" class="inline">
+      {% csrf_token %}
+      <button class="btn ghost" type="submit">模拟一批来料</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<form class="toolbar" method="get">
+  <input type="search" name="q" value="{{ q }}" placeholder="搜索本面板任意字段…">
+  <select name="status">
+    <option value="">全部状态</option>
+    <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>已确认</option>
+    <option value="draft" {% if status == 'draft' %}selected{% endif %}>草稿</option>
+  </select>
+  <button class="btn small" type="submit">筛选</button>
+  {% if q or status %}<a class="link" href="{% url 'panel_table' panel.key %}">清空</a>{% endif %}
+</form>
+
+<div class="table-wrap">
+<table class="data-table">
+  <thead>
+    <tr>
+      {% for col in panel.columns %}<th style="min-width:{{ col.width }}px">{{ col.label }}</th>{% endfor %}
+      <th class="op">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      {% for cell in row.cells %}
+      <td>
+        {% if cell.col.type == 'components' %}
+          <div class="comp-cell">{{ cell.value|default:"—"|truncatechars:100 }}</div>
+          {% if cell.components %}
+            <div class="comp-meta">
+              <span class="badge">成分 {{ cell.components|length }}</span>
+              <span class="badge ok" title="水、杂/其他按规则不计入">计入合计 {{ cell.sum }}%</span>
+              {% if cell.bad %}<span class="badge bad">合计异常</span>{% endif %}
+            </div>
+          {% endif %}
+        {% elif cell.col.type == 'number' %}
+          <span class="num">{{ cell.value|default:"—" }}</span>
+        {% else %}
+          {{ cell.value|default:"—" }}
+        {% endif %}
+      </td>
+      {% endfor %}
+      <td class="op">
+        <a href="{% url 'record_detail' panel.key row.record.pk %}">查看</a>
+        <a href="{% url 'record_edit' panel.key row.record.pk %}">编辑</a>
+        <form method="post" action="{% url 'record_delete' panel.key row.record.pk %}" class="inline" onsubmit="return confirm('确定删除这一行？';)">
+          {% csrf_token %}<button class="link danger" type="submit">删除</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="{{ panel.columns|length|add:1 }}" class="empty">暂无数据</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pager">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&q={{ q }}&status={{ status }}">上一页</a>{% endif %}
+  <span>第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&q={{ q }}&status={{ status }}">下一页</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "panels/base.html" %}
+{% block title %}识别入库记录 · BR 数据预览{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / 识别入库记录</div>
+    <h1>识别入库记录</h1>
+    <p class="muted">这里只读查看 Agent/插件送来的批次；数据修改统一到 L2 审核台，确认后才进正式面板。</p>
+  </div>
+  <div class="actions">
+    <form method="post" action="{% url 'ingestion_simulate' %}" class="inline">
+      {% csrf_token %}<button class="btn" type="submit">用 legacy 库存模拟一批来料</button>
+    </form>
+  </div>
+</div>
+
+<div class="table-wrap">
+<table class="data-table">
+  <thead><tr><th>#</th><th>面板</th><th>来源</th><th>行数</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+  <tbody>
+    {% for b in batches %}
+    <tr>
+      <td>{{ b.pk }}</td>
+      <td>{{ b.panel_name }}</td>
+      <td>{{ b.source_name|default:b.source_type }}<div class="muted small">{{ b.note|truncatechars:50 }}</div></td>
+      <td>{{ b.row_count }}</td>
+      <td><span class="badge {% if b.status == 'approved' %}ok{% elif b.status == 'rejected' %}bad{% endif %}">{{ b.get_status_display }}</span></td>
+      <td>{{ b.created_at|date:"Y-m-d H:i" }}</td>
+      <td><a href="{% url 'ingestion_review' b.pk %}">查看批次</a>{% if b.source_run_id %} · <a href="{{ review_web_base }}?run_id={{ b.source_run_id|urlencode }}" target="_blank" rel="noopener">去 L2 核对</a>{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" class="empty">还没有接入批次；点右上角用 legacy 库存模拟一批。</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

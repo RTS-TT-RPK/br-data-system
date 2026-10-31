@@ -1,0 +1,59 @@
+{% extends "panels/base.html" %}
+{% block title %}成分查询 · BR 数据预览{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / 成分查询</div>
+    <h1>成分查询</h1>
+    <p class="muted">成分已拆成一行一个；可按成分名、分类、面板、百分比范围查。共 {{ total }} 条。</p>
+  </div>
+</div>
+
+<form class="toolbar" method="get">
+  <input type="text" name="name" value="{{ name }}" placeholder="成分名，如 水 / 示例溶剂B / PH">
+  <select name="category">
+    <option value="">全部分类</option>
+    <option value="comp" {% if category == 'comp' %}selected{% endif %}>成分</option>
+    <option value="water" {% if category == 'water' %}selected{% endif %}>水</option>
+    <option value="misc" {% if category == 'misc' %}selected{% endif %}>杂/其他</option>
+    <option value="other" {% if category == 'other' %}selected{% endif %}>指标</option>
+  </select>
+  <select name="panel_key">
+    <option value="">全部面板</option>
+    {% for p in panels %}<option value="{{ p.key }}" {% if panel_key == p.key %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+  </select>
+  <input type="number" step="any" name="min_pct" value="{{ min_pct }}" placeholder="最小 %">
+  <input type="number" step="any" name="max_pct" value="{{ max_pct }}" placeholder="最大 %">
+  <button class="btn small" type="submit">查询</button>
+  <a class="link" href="{% url 'component_query' %}">清空</a>
+</form>
+
+<div class="table-wrap">
+<table class="data-table">
+  <thead><tr><th>成分</th><th>数值</th><th>单位</th><th>分类</th><th>所属面板</th><th>记录</th><th>原文</th></tr></thead>
+  <tbody>
+    {% for c in page_obj %}
+    <tr>
+      <td>{{ c.component_std|default:"—" }}</td>
+      <td class="num">{{ c.display_value }}</td>
+      <td>{{ c.unit }}</td>
+      <td><span class="badge">{{ c.get_category_display }}</span></td>
+      <td>{{ c.panel_name }}</td>
+      <td><a href="{% url 'record_detail' c.record.panel_key c.record_id %}">#{{ c.record_id }}</a></td>
+      <td class="muted">{{ c.raw_text }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" class="empty">没有匹配的成分</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pager">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&name={{ name }}&category={{ category }}&panel_key={{ panel_key }}&min_pct={{ min_pct }}&max_pct={{ max_pct }}">上一页</a>{% endif %}
+  <span>第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&name={{ name }}&category={{ category }}&panel_key={{ panel_key }}&min_pct={{ min_pct }}&max_pct={{ max_pct }}">下一页</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

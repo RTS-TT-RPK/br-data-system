@@ -1,0 +1,74 @@
+{% extends "panels/base.html" %}
+{% block title %}数据工作台 · BR 数据预览{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">数据资产 · 日常入口</div>
+    <h1>数据工作台</h1>
+    <p class="muted">像 Excel 一样的表格，能搜索、能改、能审、能查成分；数据来自人工录入或 Agent/插件。</p>
+    <div class="stat-row">
+      <div class="stat"><b>{{ record_total }}</b><span>条记录</span></div>
+      <div class="stat"><b>{{ component_count }}</b><span>条成分</span></div>
+      <div class="stat"><b>{{ panel_count }}</b><span>个面板</span></div>
+      <div class="stat"><b>{{ pending }}</b><span>待核验批次</span></div>
+    </div>
+  </div>
+  <div class="hero-side">
+    <a class="btn" href="{% url 'incoming_analysis' %}">来料分析</a>
+    <a class="btn ghost" href="{% url 'summary_report_export' %}">一键综合报表</a>
+  </div>
+</section>
+
+{% if pending %}
+<a class="pending-strip" href="{% url 'ingestion_list' %}">
+  <span><strong>识别入库记录：</strong>有 {{ pending }} 个批次等待人工核验；核验入口统一在 L2 审核台。</span>
+  <span class="btn small">去核验 →</span>
+</a>
+{% endif %}
+
+<a class="pending-strip" href="{% url 'backup_settings' %}"
+   style="border-color:#bfdbfe;background:#f8fbff;color:#1e3a8a">
+  <span><strong>外接硬盘备份：</strong>{{ backup_status.message }}</span>
+  <span class="btn small ghost">备份设置 →</span>
+</a>
+
+<div class="quick-grid">
+  <a class="quick-card" href="{% url 'panel_table' 'br_inventory' %}">
+    <span class="quick-kicker">物料资产</span><span class="quick-title">物料库存</span>
+    <span class="quick-desc">按储位查看当前库存、成分与数量</span><span class="quick-badge">日常</span>
+  </a>
+  <a class="quick-card" href="{% url 'incoming_analysis' %}">
+    <span class="quick-kicker">来料分析</span><span class="quick-title">来料分析</span>
+    <span class="quick-desc">按物料汇总、成分明细、逐条样品</span><span class="quick-badge" style="background:#EFF6FF;border-color:#BFDBFE;color:#1E40AF">三层视图</span>
+  </a>
+  <a class="quick-card" href="{% url 'data_query' %}">
+    <span class="quick-kicker">检索</span><span class="quick-title">数据查询</span>
+    <span class="quick-desc">任意面板、任意列组合筛选并导出</span>
+  </a>
+  <a class="quick-card" href="{% url 'summary_report_export' %}">
+    <span class="quick-kicker">交付</span><span class="quick-title">综合报表</span>
+    <span class="quick-desc">库存 / 来料 / 成分 / 图表汇总 Excel</span>
+  </a>
+</div>
+
+<details class="all-panels">
+  <summary>全部面板（低频配置与明细入口）</summary>
+  <div class="cards">
+    {% for item in panels %}
+    <a class="card" href="{% url 'panel_table' item.panel.key %}">
+      <div class="card-top">
+        <div class="card-icon">{{ item.panel.name|slice:":1" }}</div>
+        <div class="card-main">
+          <div class="card-title-row"><h2>{{ item.panel.name }}</h2><span class="count">{{ item.count }} 行</span></div>
+          <div class="muted">{{ item.panel.row_unit }}</div>
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="pill">{{ item.panel.columns|length }} 列</span>
+        <span class="pill soft">{{ item.panel.style_label }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</details>
+{% endblock %}

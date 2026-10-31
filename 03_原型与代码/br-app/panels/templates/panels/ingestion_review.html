@@ -1,0 +1,80 @@
+{% extends "panels/base.html" %}
+{% block title %}入库批次 #{{ batch.pk }} · BR 数据预览{% endblock %}
+{% block content %}
+{% firstof review_web_url review_web_base as l2_base %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / <a href="{% url 'ingestion_list' %}">识别入库记录</a> / #{{ batch.pk }}</div>
+    <h1>入库批次：{{ panel.name|default:batch.panel_key }}</h1>
+    <p class="muted">{{ batch.source_name }} · 来源任务：{{ batch.source_run_id|default:"—" }} · 状态：{{ batch.get_status_display }} · {{ rows|length }} 行</p>
+    {% if batch.note %}<p class="muted">说明：{{ batch.note }}</p>{% endif %}
+  </div>
+  <div class="actions">
+    {% if batch.source_run_id and l2_base %}<a class="btn" href="{{ l2_base }}?run_id={{ batch.source_run_id|urlencode }}" target="_blank" rel="noopener">去 L2 核对原图</a>{% endif %}
+    <a class="btn ghost" href="{% url 'panel_table' batch.panel_key %}">去面板查看</a>
+  </div>
+</div>
+
+{% if rows %}
+{% if batch.status == 'pending' %}
+<form method="post" action="{% url 'ingestion_approve' batch.pk %}">
+  {% csrf_token %}
+{% endif %}
+  <div class="table-wrap">
+  <table class="data-table review-table">
+    <thead><tr><th class="check">{% if batch.status == 'pending' %}<input type="checkbox" onclick="document.querySelectorAll('input[name=row_ids]').forEach(c=>c.checked=this.checked)">{% endif %}</th><th>行号</th><th>来源</th><th>宽表字段</th><th>拆出的成分</th><th>问题</th><th>状态</th></tr></thead>
+    <tbody>
+      {% for item in rows %}
+      <tr>
+        <td class="check">{% if batch.status == 'pending' %}<input type="checkbox" name="row_ids" value="{{ item.row.pk }}">{% else %}—{% endif %}</td>
+        <td>{{ item.row.row_key }}</td>
+        <td class="source-cell">
+          {% if item.row.raw_json.source %}
+            <div>{{ item.row.raw_json.source.sheet }} · {{ item.row.raw_json.source.row_id|default:item.row.row_key }}</div>
+            {% if item.row.raw_json.source.image_id %}<div class="muted">原图：{{ item.row.raw_json.source.image_id }}</div>{% endif %}
+            {% if item.row.raw_json.source.forced_blocked %}<span class="badge bad">来源行在 L2 为阻塞（强制导入）</span>{% endif %}
+          {% else %}
+            <span class="muted">{{ item.row.row_key }}</span>
+          {% endif %}
+        </td>
+        <td class="fields-cell">
+          {% for k, v in item.row.mapped_json.items %}
+            <div><span class="k">{{ k }}</span>：{{ v|default:"—" }}</div>
+          {% endfor %}
+        </td>
+        <td>
+          {% if item.comps %}
+          <table class="mini-table">
+            <tbody>
+            {% for c in item.comps %}
+              <tr><td>{{ c.name|default:"—" }}</td><td>{{ c.display|default:"—" }}</td><td class="muted">{{ c.raw_text }}</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% else %}<span class="muted">无</span>{% endif %}
+        </td>
+        <td>{% if item.issues %}{% for i in item.issues %}<span class="badge bad">{{ i }}</span>{% endfor %}{% else %}<span class="badge ok">通过</span>{% endif %}</td>
+        <td>{{ item.row.get_status_display }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+{% if batch.status == 'pending' %}
+  <div class="form-actions">
+    <button class="btn" type="submit" name="approve_selected" value="1">确认选中</button>
+    <button class="btn ghost" type="submit">确认全部（未选=全部）</button>
+  </div>
+</form>
+<div class="review-actions">
+  <form method="post" action="{% url 'ingestion_reject' batch.pk %}" class="inline" onsubmit="return confirm('拒绝整批？');">
+    {% csrf_token %}<button class="link danger" type="submit">拒绝整批</button>
+  </form>
+</div>
+{% else %}
+<div class="banner">该批次已{{ batch.get_status_display }}；如需修改，请到面板里编辑记录。</div>
+{% endif %}
+{% else %}
+<p class="muted">这个批次没有行。</p>
+{% endif %}
+{% endblock %}

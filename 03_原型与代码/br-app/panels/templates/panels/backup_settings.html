@@ -1,0 +1,148 @@
+{% extends "panels/base.html" %}
+{% block title %}外接硬盘备份 · BR 数据预览{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / 备份设置</div>
+    <h1>外接硬盘备份</h1>
+    <p class="muted">把 L3 数据库一致快照、面板/映射配置和 L1/L2 运行证据复制到另一块硬盘。只复制，不移动、不改写来源，不删除旧备份，也不做恢复。</p>
+  </div>
+  <div class="actions">
+    <span class="badge {% if status.has_new_backup %}ok{% elif status.tone == 'bad' %}bad{% else %}warn{% endif %}">{{ status.status_label }}</span>
+  </div>
+</div>
+
+{% if status.has_new_backup %}
+<div class="banner">{{ status.message }}</div>
+{% else %}
+<div class="notice-card"><strong>当前没有新备份：</strong>{{ status.message }}</div>
+{% endif %}
+
+<div class="card" style="margin-bottom:16px">
+  <div class="card-title-row"><h2>备份状态</h2><span class="count">只做副本结构检查，不代表恢复已验证</span></div>
+  <div class="detail-grid">
+    <div class="detail-item">
+      <div class="detail-label">目标文件夹</div>
+      <div class="detail-value">{{ status.target_dir|default:"未配置" }}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">目标当前可用空间</div>
+      <div class="detail-value">{% if status.free_human %}{{ status.free_human }}{% else %}—{% endif %}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">上次成功</div>
+      <div class="detail-value">
+        {% if last_success.at %}
+          {{ last_success.at }} · {{ last_success.files }} 个文件 · 数据库检查 {{ last_success.db_integrity|default:"未知" }}
+        {% else %}
+          没有成功记录
+        {% endif %}
+      </div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">上次尝试</div>
+      <div class="detail-value">
+        {% if last.at %}
+          {{ last.at }} · {{ last.result|default:"未知" }}{% if last.error %} · {{ last.error }}{% endif %}
+        {% else %}
+          尚未尝试
+        {% endif %}
+      </div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">每日自动尝试</div>
+      <div class="detail-value">{% if status.auto_daily %}开启（每天首次打开首页，失败当天不再重试）{% else %}关闭{% endif %}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">已确认是另一块硬盘</div>
+      <div class="detail-value">{% if status.confirmed_external %}是{% else %}否{% endif %}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">L1 工作区（证据来源）</div>
+      <div class="detail-value">{{ status.l1_workspace|default:"未配置" }}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">配置文件</div>
+      <div class="detail-value">{{ status.config_path|default:"—" }}</div>
+    </div>
+  </div>
+  {% if status.warnings %}
+  <div>
+    {% for warning in status.warnings %}<div class="msg warning">{{ warning }}</div>{% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<div class="analysis-tip"><span class="tip-icon">!</span><span>
+  目标必须由你在另一块硬盘上指定；文件夹须已存在，应用不会自动创建，也不会在失败时改存到系统盘。
+  有未解决的失败时页面会显示“当前没有新备份”，不会把临时文件说成成功备份。
+</span></div>
+
+<div class="form-card">
+  <div class="section-title" style="grid-column:1/-1;margin-top:0">备份设置</div>
+  <form method="post" style="display:contents">
+    {% csrf_token %}
+    <div class="field full">
+      <label for="target_dir">备份目标文件夹（另一块硬盘上的独立文件夹）</label>
+      <input id="target_dir" type="text" name="target_dir" value="{{ form.target_dir }}" placeholder="例如 E:/BR备份" autocomplete="off">
+      <div class="hint">只复制到该目录；不删除旧备份、不移动来源文件。目标盘未接入或不可写时备份直接失败。</div>
+    </div>
+    <div class="field">
+      <label for="confirmed_external">
+        <input id="confirmed_external" type="checkbox" name="confirmed_external" {% if form.confirmed_external %}checked{% endif %}>
+        我确认这是另一块硬盘
+      </label>
+      <div class="hint">应用只能比较盘符，无法断言两块盘符一定是两块物理硬盘；首次设置必须勾选。</div>
+    </div>
+    <div class="field">
+      <label for="auto_daily">
+        <input id="auto_daily" type="checkbox" name="auto_daily" {% if form.auto_daily %}checked{% endif %}>
+        每天首次打开首页时自动尝试一次
+      </label>
+      <div class="hint">失败后当天不再反复重试；也可随时点“立即备份”。</div>
+    </div>
+    <div class="field full">
+      <label for="l1_workspace">L1 工作区（识别/审核证据来源）</label>
+      <input id="l1_workspace" type="text" name="l1_workspace" value="{{ form.l1_workspace }}" placeholder="默认 %USERPROFILE%/Desktop/数据系统开发/02_图像识别">
+      <div class="hint">会复制 runs / inbox / pending / archive / golden / schemas 与 aliases.json、对照表.json；只复制，不改写。</div>
+    </div>
+    <div class="form-actions full">
+      <button class="btn" type="submit" name="action" value="save">保存配置</button>
+      <button class="btn ghost" type="submit" name="action" value="check">检查路径</button>
+      <button class="btn ghost" type="submit" name="action" value="backup">立即备份</button>
+    </div>
+  </form>
+</div>
+
+<details class="all-panels" style="margin-top:16px">
+  <summary>备份内容与排除项（展开）</summary>
+  <div style="padding:0 2px 14px">
+    <div class="detail-grid">
+      <div class="detail-item">
+        <div class="detail-label">1. 数据库一致快照</div>
+        <div class="detail-value">db/preview.sqlite3：sqlite3.Connection.backup 生成临时文件 → PRAGMA integrity_check 通过后才改正式文件名。</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">2. L3 配置</div>
+        <div class="detail-value">config/panels_snapshot.json + seeds/*.json（面板与导入映射配置）。</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">3. L1/L2 运行证据</div>
+        <div class="detail-value">l1/runs、inbox、pending、archive、golden、schemas，以及 aliases.json、对照表.json。</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">4. 清单</div>
+        <div class="detail-value">backup_manifest.json：备份时间、来源范围、目标、文件数、总字节、数据库检查结果、排除与失败信息。</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">排除项</div>
+        <div class="detail-value">__pycache__、*.pyc、*.tmp、测试数据库 test_*.sqlite3、.env/*.key/*.pem/credentials*、node_modules、.git。</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">明确不做</div>
+        <div class="detail-value">不恢复、不覆盖 preview.sqlite3、不删除旧备份、不把备份改存到系统盘、不校验“能否恢复成功”。</div>
+      </div>
+    </div>
+  </div>
+</details>
+{% endblock %}

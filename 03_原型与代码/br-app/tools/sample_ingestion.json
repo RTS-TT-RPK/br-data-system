@@ -1,0 +1,34 @@
+{
+  "panel_key": "incoming_analysis",
+  "source": {
+    "type": "dsh_agent",
+    "name": "示例 Agent",
+    "run_id": "DEMO-AGENT-001"
+  },
+  "rows": [
+    {
+      "row_key": "R0001",
+      "fields": {
+        "日期": "2026-10-27",
+        "位置": "示例库区1#",
+        "物料": "示例来料",
+        "批次": "DEMO-01",
+        "桶号": "D01",
+        "厂商": "示例供应商",
+        "成分明细": "示例溶剂A90% 水5%"
+      },
+      "components": [
+        {
+          "name": "示例溶剂A",
+          "raw_value": "90%"
+        },
+        {
+          "name": "水",
+          "raw_value": "5%"
+        }
+      ],
+      "uncertain": [],
+      "confidence": 0.95
+    }
+  ]
+}

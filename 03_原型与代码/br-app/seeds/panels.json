@@ -1,0 +1,1197 @@
+[
+  {
+    "key": "br_material_property",
+    "name": "物料性质",
+    "row_unit": "一行 = 一种物料",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "中文名",
+        "label": "中文名",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "英文名/缩写",
+        "label": "英文名/缩写",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "CAS号",
+        "label": "CAS号",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "沸点(℃)",
+        "label": "沸点(℃)",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "密度(g/mL)",
+        "label": "密度(g/mL)",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "挥发速率 (BAC=100)",
+        "label": "挥发速率 (BAC=100)",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "闪点(℃)",
+        "label": "闪点(℃)",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "IARC致癌分类",
+        "label": "IARC致癌分类",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "GHS健康危害代码",
+        "label": "GHS健康危害代码",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "OEL (ppm) (参考ACGIH)",
+        "label": "OEL (ppm) (参考ACGIH)",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "过氧化物形成倾向",
+        "label": "过氧化物形成倾向",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "饱和蒸气压(kPa@20℃)",
+        "label": "饱和蒸气压(kPa@20℃)",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "光敏性",
+        "label": "光敏性",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "市场参考价(元/吨)",
+        "label": "市场参考价(元/吨)",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "备注",
+        "label": "备注",
+        "type": "text",
+        "required": false,
+        "width": 160
+      }
+    ],
+    "form_layout": [
+      [
+        "中文名",
+        "英文名/缩写",
+        "CAS号"
+      ],
+      [
+        "沸点(℃)",
+        "密度(g/mL)",
+        "挥发速率 (BAC=100)"
+      ],
+      [
+        "闪点(℃)",
+        "IARC致癌分类",
+        "GHS健康危害代码"
+      ],
+      [
+        "OEL (ppm) (参考ACGIH)",
+        "过氧化物形成倾向",
+        "饱和蒸气压(kPa@20℃)"
+      ],
+      [
+        "光敏性",
+        "市场参考价(元/吨)",
+        "备注"
+      ]
+    ],
+    "measurements": {
+      "enabled": false
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "br_azeotrope",
+    "name": "共沸数据",
+    "row_unit": "一行 = 一对共沸组分",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "组分A",
+        "label": "组分A",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "组分B",
+        "label": "组分B",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "共沸点(℃)",
+        "label": "共沸点(℃)",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "共沸组成A%",
+        "label": "共沸组成A%",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "共沸组成B%",
+        "label": "共沸组成B%",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "分离难度",
+        "label": "分离难度",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "备注",
+        "label": "备注",
+        "type": "text",
+        "required": false,
+        "width": 160
+      }
+    ],
+    "form_layout": [
+      [
+        "组分A",
+        "组分B",
+        "共沸点(℃)"
+      ],
+      [
+        "共沸组成A%",
+        "共沸组成B%",
+        "分离难度"
+      ],
+      [
+        "备注"
+      ]
+    ],
+    "measurements": {
+      "enabled": false
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "br_location",
+    "name": "储存位置",
+    "row_unit": "一行 = 一个储位/罐位",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "储位",
+        "label": "储位",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "储存区域",
+        "label": "储存区域",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "储罐类型",
+        "label": "储罐类型",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "最大方量",
+        "label": "最大方量",
+        "type": "number",
+        "required": false,
+        "width": 120
+      }
+    ],
+    "form_layout": [
+      [
+        "储位",
+        "储存区域",
+        "储罐类型"
+      ],
+      [
+        "最大方量"
+      ]
+    ],
+    "measurements": {
+      "enabled": false
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "br_tank_volume",
+    "name": "储罐液位体积",
+    "row_unit": "一行 = 一个液位刻度",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "液位",
+        "label": "液位",
+        "type": "number",
+        "required": true,
+        "width": 120
+      },
+      {
+        "key": "二百方立式罐",
+        "label": "二百方立式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "一百五方立式罐",
+        "label": "一百五方立式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "五十方立式罐",
+        "label": "五十方立式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "三十方立式罐",
+        "label": "三十方立式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "二十方立式罐",
+        "label": "二十方立式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "十方立式罐",
+        "label": "十方立式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "二十五方卧式罐",
+        "label": "二十五方卧式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "四十方卧式罐",
+        "label": "四十方卧式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "五十方卧式罐",
+        "label": "五十方卧式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "六十方卧式罐",
+        "label": "六十方卧式罐",
+        "type": "number",
+        "required": false,
+        "width": 120
+      }
+    ],
+    "form_layout": [
+      [
+        "液位",
+        "二百方立式罐",
+        "一百五方立式罐"
+      ],
+      [
+        "五十方立式罐",
+        "三十方立式罐",
+        "二十方立式罐"
+      ],
+      [
+        "十方立式罐",
+        "二十五方卧式罐",
+        "四十方卧式罐"
+      ],
+      [
+        "五十方卧式罐",
+        "六十方卧式罐"
+      ]
+    ],
+    "measurements": {
+      "enabled": false
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "br_hardware",
+    "name": "五金配件库",
+    "row_unit": "一行 = 一个五金配件",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "时间戳",
+        "label": "时间戳",
+        "type": "text",
+        "required": false,
+        "width": 150
+      },
+      {
+        "key": "名称",
+        "label": "名称",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "型号",
+        "label": "型号",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "数量",
+        "label": "数量",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "单价",
+        "label": "单价",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "供货商",
+        "label": "供货商",
+        "type": "text",
+        "required": false,
+        "width": 160
+      },
+      {
+        "key": "预警值",
+        "label": "预警值",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "备注",
+        "label": "备注",
+        "type": "text",
+        "required": false,
+        "width": 160
+      }
+    ],
+    "form_layout": [
+      [
+        "时间戳",
+        "名称",
+        "型号"
+      ],
+      [
+        "数量",
+        "单价",
+        "供货商"
+      ],
+      [
+        "预警值",
+        "备注"
+      ]
+    ],
+    "measurements": {
+      "enabled": false
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "br_inventory",
+    "name": "物料库存",
+    "row_unit": "一行 = 一个储位/罐的当前库存",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "储位",
+        "label": "储位",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "储存区域",
+        "label": "储存区域",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "日期编号",
+        "label": "日期编号",
+        "type": "text",
+        "required": false,
+        "width": 150
+      },
+      {
+        "key": "来源",
+        "label": "来源",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "名称",
+        "label": "名称",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "性质",
+        "label": "性质",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "成分明细",
+        "label": "成分明细",
+        "type": "components",
+        "required": false,
+        "width": 320
+      },
+      {
+        "key": "备注",
+        "label": "备注",
+        "type": "text",
+        "required": false,
+        "width": 160
+      },
+      {
+        "key": "数量/液位",
+        "label": "数量/液位",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "体积",
+        "label": "体积",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "重量",
+        "label": "重量",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "总价",
+        "label": "总价",
+        "type": "number",
+        "required": false,
+        "width": 120
+      }
+    ],
+    "form_layout": [
+      [
+        "储位",
+        "储存区域",
+        "日期编号"
+      ],
+      [
+        "来源",
+        "名称",
+        "性质"
+      ],
+      [
+        "成分明细",
+        "备注",
+        "数量/液位"
+      ],
+      [
+        "体积",
+        "重量",
+        "总价"
+      ]
+    ],
+    "measurements": {
+      "enabled": true,
+      "unit": "%",
+      "sum_max": 100.0,
+      "categories": {
+        "water": "never",
+        "misc": "if_present",
+        "default": "always"
+      }
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "br_log",
+    "name": "操作日志",
+    "row_unit": "一行 = 一次操作",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "时间戳",
+        "label": "时间戳",
+        "type": "text",
+        "required": false,
+        "width": 150
+      },
+      {
+        "key": "操作类型",
+        "label": "操作类型",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "储位",
+        "label": "储位",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "名称",
+        "label": "名称",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "来源",
+        "label": "来源",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "原体积",
+        "label": "原体积",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "新体积",
+        "label": "新体积",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "原重量",
+        "label": "原重量",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "新重量",
+        "label": "新重量",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "备注",
+        "label": "备注",
+        "type": "text",
+        "required": false,
+        "width": 160
+      }
+    ],
+    "form_layout": [
+      [
+        "时间戳",
+        "操作类型",
+        "储位"
+      ],
+      [
+        "名称",
+        "来源",
+        "原体积"
+      ],
+      [
+        "新体积",
+        "原重量",
+        "新重量"
+      ],
+      [
+        "备注"
+      ]
+    ],
+    "measurements": {
+      "enabled": false
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "br_process_card",
+    "name": "车间投料工艺卡",
+    "row_unit": "一行 = 一次投料工艺卡",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "塔号",
+        "label": "塔号",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "时间戳",
+        "label": "时间戳",
+        "type": "text",
+        "required": false,
+        "width": 150
+      },
+      {
+        "key": "操作方式",
+        "label": "操作方式",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "物料来源",
+        "label": "物料来源",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "名称",
+        "label": "名称",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "主成分",
+        "label": "主成分",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "成分明细",
+        "label": "成分明细",
+        "type": "components",
+        "required": false,
+        "width": 320
+      },
+      {
+        "key": "原料贮存位置",
+        "label": "原料贮存位置",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "主要参数",
+        "label": "主要参数",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "产品要求",
+        "label": "产品要求",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "理论收率",
+        "label": "理论收率",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "工艺备注",
+        "label": "工艺备注",
+        "type": "text",
+        "required": false,
+        "width": 120
+      }
+    ],
+    "form_layout": [
+      [
+        "塔号",
+        "时间戳",
+        "操作方式"
+      ],
+      [
+        "物料来源",
+        "名称",
+        "主成分"
+      ],
+      [
+        "成分明细",
+        "原料贮存位置",
+        "主要参数"
+      ],
+      [
+        "产品要求",
+        "理论收率",
+        "工艺备注"
+      ]
+    ],
+    "measurements": {
+      "enabled": true,
+      "unit": "%",
+      "sum_max": 100.0,
+      "categories": {
+        "water": "never",
+        "misc": "if_present",
+        "default": "always"
+      }
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "br_production",
+    "name": "车间生产记录",
+    "row_unit": "一行 = 一次生产记录",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "时间戳",
+        "label": "时间戳",
+        "type": "text",
+        "required": false,
+        "width": 150
+      },
+      {
+        "key": "塔号",
+        "label": "塔号",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "班组",
+        "label": "班组",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "物料来源",
+        "label": "物料来源",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "名称",
+        "label": "名称",
+        "type": "text",
+        "required": true,
+        "width": 160
+      },
+      {
+        "key": "数量",
+        "label": "数量",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "进料时段",
+        "label": "进料时段",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "原料贮存位置",
+        "label": "原料贮存位置",
+        "type": "text",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "产品收率",
+        "label": "产品收率",
+        "type": "number",
+        "required": false,
+        "width": 120
+      },
+      {
+        "key": "备注",
+        "label": "备注",
+        "type": "text",
+        "required": false,
+        "width": 160
+      }
+    ],
+    "form_layout": [
+      [
+        "时间戳",
+        "塔号",
+        "班组"
+      ],
+      [
+        "物料来源",
+        "名称",
+        "数量"
+      ],
+      [
+        "进料时段",
+        "原料贮存位置",
+        "产品收率"
+      ],
+      [
+        "备注"
+      ]
+    ],
+    "measurements": {
+      "enabled": false
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export",
+      "import"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  },
+  {
+    "key": "incoming_analysis",
+    "name": "来料分析",
+    "row_unit": "一行 = 一个来料样品（一桶/一批/一车）",
+    "style": "br_table",
+    "columns": [
+      {
+        "key": "日期",
+        "label": "日期",
+        "type": "text",
+        "required": true,
+        "width": 130
+      },
+      {
+        "key": "位置",
+        "label": "位置",
+        "type": "text",
+        "required": true,
+        "width": 150
+      },
+      {
+        "key": "物料",
+        "label": "物料",
+        "type": "text",
+        "required": true,
+        "width": 150
+      },
+      {
+        "key": "批次",
+        "label": "批次",
+        "type": "text",
+        "width": 120
+      },
+      {
+        "key": "桶号",
+        "label": "桶号",
+        "type": "text",
+        "width": 100
+      },
+      {
+        "key": "厂商",
+        "label": "厂商",
+        "type": "text",
+        "width": 160
+      },
+      {
+        "key": "成分明细",
+        "label": "成分明细",
+        "type": "components",
+        "width": 360
+      },
+      {
+        "key": "备注",
+        "label": "备注",
+        "type": "text",
+        "width": 160
+      }
+    ],
+    "form_layout": [
+      [
+        "日期",
+        "位置",
+        "物料"
+      ],
+      [
+        "批次",
+        "桶号",
+        "厂商"
+      ],
+      [
+        "成分明细"
+      ],
+      [
+        "备注"
+      ]
+    ],
+    "measurements": {
+      "enabled": true,
+      "unit": "%",
+      "sum_max": 100.0,
+      "categories": {
+        "water": "never",
+        "misc": "if_present",
+        "default": "always"
+      }
+    },
+    "actions": [
+      "create",
+      "edit",
+      "delete",
+      "export"
+    ],
+    "permissions": {
+      "view": [
+        "admin",
+        "editor",
+        "viewer"
+      ],
+      "edit": [
+        "admin",
+        "editor"
+      ]
+    },
+    "version": 1,
+    "status": "published"
+  }
+]

@@ -1,0 +1,50 @@
+{% extends "panels/base.html" %}
+{% block title %}{% if record %}编辑{% else %}新增{% endif %} · {{ panel.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / <a href="{% url 'panel_table' panel.key %}">{{ panel.name }}</a> / {% if record %}编辑{% else %}新增{% endif %}</div>
+    <h1>{% if record %}编辑一行{% else %}新增一行{% endif %}</h1>
+    <p class="muted">{{ panel.row_unit }}</p>
+  </div>
+</div>
+
+<form method="post" class="form-card">
+  {% csrf_token %}
+  {% for f in fields %}
+  <div class="field {% if f.is_components %}full{% endif %}">
+    <label for="f-{{ forloop.counter }}">{{ f.col.label }}{% if f.col.required %}<span class="req">*</span>{% endif %}</label>
+    {% if f.is_components %}
+      <textarea id="f-{{ forloop.counter }}" name="{{ f.col.key }}" rows="4" placeholder="例：示例溶剂A90% 水5% PH7">{{ f.value }}</textarea>
+      <div class="hint">一格多值可直接粘贴原文；保存后自动拆成成分行，并校验原文能否拼回。</div>
+    {% elif f.col.type == 'number' %}
+      <input id="f-{{ forloop.counter }}" type="number" step="any" name="{{ f.col.key }}" value="{{ f.value }}">
+    {% else %}
+      <input id="f-{{ forloop.counter }}" type="text" name="{{ f.col.key }}" value="{{ f.value }}">
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  {% if components %}
+  <div class="preview-box full">
+    <div class="preview-title">当前拆出的成分（{{ components|length }} 条）</div>
+    <table class="mini-table">
+      <thead><tr><th>成分</th><th>数值</th><th>单位</th><th>原文</th><th>分类</th></tr></thead>
+      <tbody>
+        {% for c in components %}
+        <tr><td>{{ c.name|default:"—" }}</td><td>{{ c.display }}</td><td>{{ c.unit }}</td><td>{{ c.raw_text }}</td><td>{{ c.category }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <div class="form-actions full">
+    <button class="btn" type="submit">保存</button>
+    <a class="btn ghost" href="{% url 'panel_table' panel.key %}">取消</a>
+    {% if record %}
+    <a class="link" href="{% url 'record_detail' panel.key record.pk %}">查看详情</a>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

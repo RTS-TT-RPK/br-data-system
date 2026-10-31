@@ -1,0 +1,116 @@
+{% extends "panels/base.html" %}
+{% block title %}来料分析 · BR 数据预览{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / <a href="{% url 'panel_table' 'incoming_analysis' %}">来料分析</a> / 一键分析</div>
+    <h1>来料分析</h1>
+    <p class="muted">主溶剂只从有百分比的有机成分中判定；没有可识别的有机成分时显示“无法识别主溶剂”。沸点差与二元共沸数据是资料提示，不是工艺结论。共 {{ rows|length }} 条。</p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="{% url 'summary_report_export' %}">下载综合 Excel</a>
+    <a class="btn ghost" href="{% url 'panel_table' 'incoming_analysis' %}">返回面板</a>
+  </div>
+</div>
+
+{% if unknown_main_count %}
+<div class="notice-card"><strong>无法识别主溶剂：</strong>有 {{ unknown_main_count }} 条来料记录没有可识别的有机成分（只有水/杂/PH 或缺少百分比成分）。这些记录不会用水、杂或 PH 顶替主溶剂，沸点差/共沸显示“无法判断”。</div>
+{% endif %}
+
+<div class="analysis-tip">
+  <span class="tip-icon">ℹ</span>
+  <span><strong>工艺口径：</strong>“主溶剂”只从可识别的有机成分（category=comp 且带百分比数值）中按最高含量判定；水、杂、PH 不会顶替。沸点差与二元共沸数据是资料提示，不是工艺结论；未收录不等于不存在共沸，实际投料前请由工艺人员复核。</span>
+</div>
+
+<div class="view-tabs" role="tablist" aria-label="来料分析视图">
+  <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-tab="summary" onclick="switchAnalysisTab('summary', this)">1. 按物料汇总 ({{ summary|length }})</button>
+  <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="components" onclick="switchAnalysisTab('components', this)">2. 按物料成分明细 ({{ mat_comps|length }})</button>
+  <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="records" onclick="switchAnalysisTab('records', this)">3. 逐条样品明细 ({{ rows|length }})</button>
+</div>
+
+<div id="tab-summary" class="tab-panel active" role="tabpanel">
+  <div class="analysis-section-head"><h2>按物料汇总</h2><span class="muted">主溶剂 / 沸点 / 共沸记录</span></div>
+  <div class="table-wrap" style="max-height:430px">
+    <table class="data-table compact">
+      <thead><tr><th>物料</th><th>记录数</th><th>主溶剂（按最高含量）</th><th>平均含量</th><th>主成分沸点</th><th>平均最小沸点差</th><th>共沸记录（仅二元表）</th></tr></thead>
+      <tbody>
+        {% for m in summary %}
+        <tr>
+          <td><strong>{{ m.material|default:"—" }}</strong></td>
+          <td>{{ m.count }}</td>
+          <td>{% if m.main_unknown %}<span class="badge warn">无法识别主溶剂</span>{% else %}{{ m.main_name|default:"—" }}{% endif %}</td>
+          <td>{% if m.avg_pct is not None %}{{ m.avg_pct|floatformat:2 }}%{% else %}—{% endif %}</td>
+          <td>{% if m.bp %}{{ m.bp|floatformat:1 }}℃{% else %}未收录{% endif %}</td>
+          <td>{% if m.avg_gap is not None %}{{ m.avg_gap|floatformat:1 }}℃{% else %}—{% endif %}</td>
+          <td><span class="badge {% if m.azeo_flag == '是' %}bad{% elif m.azeo_flag == '无法判断' %}warn{% else %}ok{% endif %}">{{ m.azeo_label }}</span></td>
+        </tr>
+        {% empty %}<tr><td colspan="7" class="empty">还没有来料分析数据</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-components" class="tab-panel" role="tabpanel">
+  <div class="analysis-section-head"><h2>按物料成分明细</h2><span class="muted">每种物料有哪些成分、平均/最高/最低含量</span></div>
+  <div class="table-wrap" style="max-height:390px">
+    <table class="data-table compact">
+      <thead><tr><th>物料</th><th>成分</th><th>出现次数</th><th>平均含量</th><th>最高</th><th>最低</th></tr></thead>
+      <tbody>
+        {% for m in mat_comps %}
+        <tr><td><strong>{{ m.material|default:"—" }}</strong></td><td>{{ m.component }}</td><td>{{ m.count }}</td><td>{{ m.avg|floatformat:2 }}%</td><td>{{ m.max|floatformat:2 }}%</td><td>{{ m.min|floatformat:2 }}%</td></tr>
+        {% empty %}<tr><td colspan="6" class="empty">暂无成分数据</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="analysis-section-head"><h2>成分出现次数 Top 15</h2></div>
+  <div class="table-wrap" style="max-height:300px">
+    <table class="data-table compact">
+      <thead><tr><th>成分</th><th>出现次数</th><th>平均含量</th><th>最高</th><th>最低</th></tr></thead>
+      <tbody>
+        {% for c in comps %}
+        <tr><td>{{ c.name }}</td><td>{{ c.count }}</td><td>{{ c.avg|floatformat:2 }}%</td><td>{{ c.max|floatformat:2 }}%</td><td>{{ c.min|floatformat:2 }}%</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-records" class="tab-panel" role="tabpanel">
+  <div class="analysis-section-head"><h2>逐条明细</h2><span class="muted">按记录；共 {{ rows|length }} 条</span></div>
+  <div class="table-wrap">
+    <table class="data-table compact">
+      <thead><tr><th>日期</th><th>位置</th><th>物料</th><th>主溶剂（按最高含量）</th><th>含量</th><th>沸点</th><th>其它成分（含量 / 沸点 / 差距）</th><th>最小差</th><th>最大差</th><th>共沸记录</th><th>说明</th></tr></thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>{{ r.date|default:"—" }}</td>
+          <td>{{ r.location|default:"—" }}</td>
+          <td><strong>{{ r.material|default:"—" }}</strong></td>
+          <td>{% if r.main_unknown %}<span class="badge warn">无法识别主溶剂</span><div class="muted small">{{ r.main_note|truncatechars:60 }}</div>{% else %}{{ r.main_name }}{% endif %}</td>
+          <td>{{ r.main_pct_label|default:"—" }}</td>
+          <td>{{ r.main_bp_label|default:"未收录" }}{% if r.main_bp_label %}℃{% endif %}</td>
+          <td class="comp-cell">{{ r.other_text|default:"—"|truncatechars:160 }}</td>
+          <td>{{ r.min_gap_label|default:"—" }}{% if r.min_gap_label %}℃{% endif %}</td>
+          <td>{{ r.max_gap_label|default:"—" }}{% if r.max_gap_label %}℃{% endif %}</td>
+          <td><span class="badge {% if r.azeo_flag == '是' %}bad{% elif r.azeo_flag == '无法判断' %}warn{% else %}ok{% endif %}">{{ r.azeo_label }}</span></td>
+          <td class="muted">{{ r.azeo_note|truncatechars:50 }}</td>
+        </tr>
+        {% empty %}<tr><td colspan="11" class="empty">还没有来料分析数据</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="query-tip" style="margin-top:10px">“无法识别主溶剂”表示这一行没有可识别的有机成分（只有水/杂/PH 或缺少百分比成分），不会用水、杂或 PH 顶替；沸点差与二元共沸数据是资料提示，不是工艺结论。</div>
+</div>
+
+<script>
+function switchAnalysisTab(name, btn) {
+  document.querySelectorAll('.view-tabs .tab-btn').forEach(function (b) {
+    b.classList.remove('active'); b.setAttribute('aria-selected', 'false');
+  });
+  document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
+  var target = document.getElementById('tab-' + name);
+  if (target) target.classList.add('active');
+}
+</script>
+{% endblock %}

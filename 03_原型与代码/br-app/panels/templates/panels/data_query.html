@@ -1,0 +1,106 @@
+{% extends "panels/base.html" %}
+{% block title %}数据查询 · BR 数据预览{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / 数据查询</div>
+    <h1>数据查询</h1>
+    <p class="muted">任意面板、任意列做条件筛选；结果可导出 Excel。共 {{ total }} 行。</p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="{% url 'data_query_export' %}?{{ query_string }}">导出 Excel</a>
+  </div>
+</div>
+
+<form class="query-card" method="get">
+  <div class="query-basic">
+    <label>面板
+      <select name="panel_key" onchange="this.form.submit()">
+        {% for p in panels %}<option value="{{ p.key }}" {% if panel_key == p.key %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <div class="query-tip" style="grid-column:2/-1">选面板后，条件里出现该面板的全部列。留空的条件不参与筛选。</div>
+  </div>
+
+  <div class="cond-head">
+    <div>字段</div><div>条件</div><div>值</div><div>第二个值（介于）</div>
+  </div>
+  <div class="cond-list" id="cond-list">
+    {% for row in condition_rows %}
+    <div class="cond-row">
+      <select name="field_{{ row.i }}">
+        <option value="">— 不筛选 —</option>
+        {% for col in columns %}
+        <option value="{{ col.key }}" {% if row.field == col.key %}selected{% endif %}>{{ col.label }}</option>
+        {% endfor %}
+      </select>
+      <select name="op_{{ row.i }}">
+        <option value="contains" {% if row.op == 'contains' %}selected{% endif %}>包含</option>
+        <option value="not_contains" {% if row.op == 'not_contains' %}selected{% endif %}>不包含</option>
+        <option value="eq" {% if row.op == 'eq' %}selected{% endif %}>等于</option>
+        <option value="ne" {% if row.op == 'ne' %}selected{% endif %}>不等于</option>
+        <option value="gt" {% if row.op == 'gt' %}selected{% endif %}>大于</option>
+        <option value="gte" {% if row.op == 'gte' %}selected{% endif %}>不低于 ≥</option>
+        <option value="lt" {% if row.op == 'lt' %}selected{% endif %}>小于</option>
+        <option value="lte" {% if row.op == 'lte' %}selected{% endif %}>不高于 ≤</option>
+        <option value="between" {% if row.op == 'between' %}selected{% endif %}>介于</option>
+        <option value="empty" {% if row.op == 'empty' %}selected{% endif %}>为空</option>
+        <option value="not_empty" {% if row.op == 'not_empty' %}selected{% endif %}>不为空</option>
+      </select>
+      <input type="text" name="val_{{ row.i }}" value="{{ row.val }}" placeholder="值">
+      <input type="text" name="val_{{ row.i }}_2" value="{{ row.val2 }}" placeholder="结束值（仅介于）">
+    </div>
+    {% endfor %}
+  </div>
+  <div class="form-actions">
+    <button class="btn" type="submit">查询</button>
+    <button class="btn ghost" type="button" id="btn-add-condition">+ 添加筛选条件</button>
+    <a class="btn ghost" href="{% url 'data_query' %}?panel_key={{ panel.key }}">清空条件</a>
+  </div>
+</form>
+
+<div class="table-wrap">
+<table class="data-table">
+  <thead><tr>{% for col in columns %}<th style="min-width:{{ col.width }}px">{{ col.label }}</th>{% endfor %}<th class="op">操作</th></tr></thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      {% for value in row.cells %}<td>{{ value|default:"—" }}</td>{% endfor %}
+      <td class="op"><a href="{% url 'record_detail' panel.key row.record.pk %}">查看</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="{{ columns|length|add:1 }}" class="empty">没有符合条件的记录</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pager">
+  {% if page_obj.has_previous %}<a href="?{{ query_string }}&page={{ page_obj.previous_page_number }}">上一页</a>{% endif %}
+  <span>第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span>
+  {% if page_obj.has_next %}<a href="?{{ query_string }}&page={{ page_obj.next_page_number }}">下一页</a>{% endif %}
+</div>
+{% endif %}
+
+<script>
+(function(){
+  var list = document.getElementById('cond-list');
+  var add = document.getElementById('btn-add-condition');
+  if (!list || !add) return;
+  add.addEventListener('click', function(){
+    var rows = list.querySelectorAll('.cond-row');
+    var last = rows[rows.length - 1];
+    if (!last) return;
+    var clone = last.cloneNode(true);
+    var next = rows.length + 1;
+    clone.querySelectorAll('select').forEach(function(el){ el.selectedIndex = 0; });
+    clone.querySelectorAll('input').forEach(function(el){ el.value = ''; });
+    clone.querySelectorAll('[name]').forEach(function(el){
+      el.name = el.name.replace(/_(\d+)(_2)?$/, '_' + next + '$2');
+    });
+    list.appendChild(clone);
+  });
+})();
+</script>
+{% endblock %}

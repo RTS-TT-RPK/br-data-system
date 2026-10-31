@@ -1,0 +1,31 @@
+# ── 业务原始资料 / 数据库 / 旧系统备份：不随仓库发布 ─────────────────
+01_现有系统参考/
+02_分析与证据/
+04_归档_旧资料/
+Gemini审核意见及资料/
+03_原型与代码/br-app/data/
+# 界面截图含真实库存/来料数据：只留本地，不随公开仓库发布
+03_原型与代码/br-app/screenshots/
+# 本地真实业务明细（库存/来料等）：只留本地，不发布；公开仓库改用合成种子 seeds/legacy_data.json
+03_原型与代码/br-app/seeds/legacy_data.local-real.json
+03_原型与代码/br-app/示例_综合物料汇总.xlsx
+
+# 数据库与 Office 大文件
+*.sqlite3
+*.db
+*.xlsm
+~$*.xlsx
+
+# 运行时缓存 / 密钥
+__pycache__/
+*.pyc
+staticfiles/
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+.vscode/
+*.log
+Thumbs.db
+desktop.ini

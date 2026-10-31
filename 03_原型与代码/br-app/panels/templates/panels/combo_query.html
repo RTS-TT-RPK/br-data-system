@@ -1,0 +1,110 @@
+{% extends "panels/base.html" %}
+{% block title %}条件查询 · BR 数据预览{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / 条件查询</div>
+    <h1>条件查询</h1>
+    <p class="muted">按同一行的多个成分阈值筛选：例如“示例溶剂B ≥ 70% 且 水 ≤ 5%”。共 {{ total }} 条。</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{% url 'combo_query' %}?panel_key=br_inventory&material=%E7%A4%BA%E4%BE%8B%E6%BA%B6%E5%89%82&cond_name_1=%E7%A4%BA%E4%BE%8B%E6%BA%B6%E5%89%82B&cond_op_1=gte&cond_val_1=70&cond_name_2=%E6%B0%B4&cond_op_2=lte&cond_val_2=5">示例：物料名含“示例溶剂”（示例溶剂B≥70%，水≤5%）</a>
+  </div>
+</div>
+
+{% if errors %}
+<div class="messages">{% for e in errors %}<div class="msg warning">{{ e }}</div>{% endfor %}</div>
+{% endif %}
+
+<form class="query-card" method="get">
+  <div class="query-basic">
+    <label>面板
+      <select name="panel_key">
+        <option value="">全部面板</option>
+        {% for p in panels %}<option value="{{ p.key }}" {% if panel_key == p.key %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>物料名称包含
+      <input type="text" name="material" value="{{ material }}" placeholder="如：示例溶剂">
+    </label>
+    <div class="query-tip">“不高于/低于”默认要求该成分有记录；缺失按“未知”处理，不参与匹配。只有明确记录为 0 才算零。</div>
+  </div>
+
+  <div class="query-tip" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:-4px 0 14px">
+    <label style="display:flex;gap:6px;align-items:center;cursor:pointer;font-weight:600;color:#475569">
+      <input type="checkbox" name="missing_as_zero" value="1" {% if missing_as_zero %}checked{% endif %}>
+      把缺失成分按 0 处理（假设，不是实测）
+    </label>
+    <span>勾选后，没有该成分记录的行也会按 0 参与“不高于/低于”匹配，结果标注“未记录（按 0 假设）”；不勾选时缺失记作“无记录（未知）”，不参与匹配。</span>
+  </div>
+
+  <div class="cond-head">
+    <div>成分名</div><div>条件</div><div>百分比</div><div>第二个百分比（介于）</div>
+  </div>
+  <div class="cond-list">
+    {% for row in condition_rows %}
+    <div class="cond-row">
+      <input type="text" name="cond_name_{{ row.i }}" value="{{ row.name }}" placeholder="如：示例溶剂B">
+      <select name="cond_op_{{ row.i }}">
+        <option value="gte" {% if row.op == 'gte' %}selected{% endif %}>不低于 ≥</option>
+        <option value="gt" {% if row.op == 'gt' %}selected{% endif %}>高于 &gt;</option>
+        <option value="lte" {% if row.op == 'lte' %}selected{% endif %}>不高于 ≤</option>
+        <option value="lt" {% if row.op == 'lt' %}selected{% endif %}>低于 &lt;</option>
+        <option value="between" {% if row.op == 'between' %}selected{% endif %}>介于</option>
+      </select>
+      <input type="number" step="any" name="cond_val_{{ row.i }}" value="{{ row.value }}" placeholder="例如 80">
+      <input type="number" step="any" name="cond_val_{{ row.i }}_2" value="{{ row.value2 }}" placeholder="仅“介于”填">
+    </div>
+    {% endfor %}
+  </div>
+  <div class="form-actions">
+    <button class="btn" type="submit">查询</button>
+    <a class="btn ghost" href="{% url 'combo_query' %}">清空</a>
+  </div>
+</form>
+
+{% if conditions %}
+<div class="analysis-tip">
+  <span class="tip-icon">ℹ</span>
+  <span>
+    <strong>结果说明：</strong>
+    {% if missing_as_zero %}缺失成分已按 0 假设参与“不高于/低于”匹配，结果标注“未记录（按 0 假设）”；明确记录为 0 的显示 0%。{% else %}缺失成分按“未知”处理，不参与“不高于/低于”匹配；只有明确记录为 0 的才显示 0%。{% endif %}
+    {% if alias_notes %}别名口径：{{ alias_notes }}。{% endif %}
+  </span>
+</div>
+{% endif %}
+
+<div class="table-wrap">
+<table class="data-table">
+  <thead><tr><th>面板</th><th>物料</th><th>储位/区域</th><th>成分明细（原文）</th><th>条件核对</th><th>操作</th></tr></thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td>{{ row.panel_name }}</td>
+      <td><strong>{{ row.material|default:"—" }}</strong></td>
+      <td>{{ row.location|default:"—" }}{% if row.area %}<div class="muted small">{{ row.area }}</div>{% endif %}</td>
+      <td class="comp-cell">{{ row.summary|default:"—"|truncatechars:100 }}</td>
+      <td>
+        {% for m in row.checks %}
+        <div style="margin-bottom:4px"><span class="badge {% if m.ok %}ok{% else %}bad{% endif %}">{{ m.name }} {{ m.display }}</span>{% if m.note %} <span class="muted small">{{ m.note }}</span>{% endif %}</div>
+        {% empty %}<span class="muted">—</span>{% endfor %}
+      </td>
+      <td><a href="{% url 'record_detail' row.record.panel_key row.record.pk %}">查看</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" class="empty">没有符合条件的记录；试试减少条件或放宽百分比。</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<div class="query-tip" style="margin-top:10px">“未记录（按 0 假设）”是查询假设，不是实测值；“无记录（未知）”表示数据里没有该成分记录。投料判定前请核对原始记录。</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pager">
+  {% if page_obj.has_previous %}<a href="?{{ request.GET.urlencode }}&page={{ page_obj.previous_page_number }}">上一页</a>{% endif %}
+  <span>第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span>
+  {% if page_obj.has_next %}<a href="?{{ request.GET.urlencode }}&page={{ page_obj.next_page_number }}">下一页</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

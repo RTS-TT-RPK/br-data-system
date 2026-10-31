@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "description": "L2 reviewed.json（reviewed/v2）-> L3 草稿批次。先只接库存明细；其他表按同样格式增加。",
+  "reviewed_schema_versions": [
+    "reviewed/v2"
+  ],
+  "allowed_component_units": [
+    "%",
+    "‰",
+    "ppm",
+    "mg/L",
+    "g/L",
+    "",
+    "—"
+  ],
+  "sheets": {
+    "库存明细": {
+      "panel_key": "br_inventory",
+      "row_key_prefix": "库存",
+      "component_source": "成分明细",
+      "component_field": "成分明细",
+      "fields": {
+        "储位": "库位",
+        "储存区域": "储存区域",
+        "日期编号": "编号",
+        "来源": "来源",
+        "名称": "物料名称",
+        "性质": "性质",
+        "成分明细": "成分明细",
+        "数量/液位": "数量"
+      },
+      "templates": {
+        "备注": "状态：{状态}；规格：{规格}"
+      },
+      "required": [
+        "物料名称"
+      ],
+      "notes": "数量按原文字符串保留；成分原文与 components 必须一致（契约第3节第10条）；PH、杂 这类非成分 token 留在成分明细原文里，不丢。"
+    }
+  }
+}

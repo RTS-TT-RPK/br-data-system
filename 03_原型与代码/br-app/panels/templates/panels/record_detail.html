@@ -1,0 +1,38 @@
+{% extends "panels/base.html" %}
+{% block title %}查看 · {{ panel.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="{% url 'home' %}">面板</a> / <a href="{% url 'panel_table' panel.key %}">{{ panel.name }}</a> / 查看</div>
+    <h1>{{ panel.name }} #{{ record.pk }}</h1>
+    <p class="muted">状态：{{ record.get_status_display }} · 来源：{{ record.get_source_type_display }}</p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="{% url 'record_edit' panel.key record.pk %}">编辑</a>
+    <a class="btn ghost" href="{% url 'panel_table' panel.key %}">返回</a>
+  </div>
+</div>
+
+<div class="detail-grid">
+  {% for f in fields %}
+  <div class="detail-item">
+    <div class="detail-label">{{ f.col.label }}</div>
+    <div class="detail-value">{{ f.value|default:"—" }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if components %}
+<h2 class="section-title">成分明细（拆开）</h2>
+<div class="table-wrap">
+<table class="data-table">
+  <thead><tr><th>成分</th><th>数值</th><th>单位</th><th>图上原文</th><th>分类</th></tr></thead>
+  <tbody>
+    {% for c in components %}
+    <tr><td>{{ c.name|default:"—" }}</td><td>{{ c.display }}</td><td>{{ c.unit }}</td><td>{{ c.raw_text }}</td><td>{{ c.category }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}
